@@ -3,10 +3,12 @@ import logo from "../../assets/logo.png";
 import { Container, Form } from "./styles";
 import CompareList from "../../components/Comparelist";
 import api from "../../services/api";
-import moment from 'moment';
+import moment from "moment";
 
 export default class Main extends Component {
   state = {
+    loading: false,
+    repositoryError: false,
     repositoryInput: "",
     repositories: []
   };
@@ -14,17 +16,25 @@ export default class Main extends Component {
   handleAddRepository = async e => {
     e.preventDefault();
 
+    this.setState({ loading: true });
+
     try {
-      const { data: repository } = await api.get(`repos/${this.state.repositoryInput}`);
+      const { data: repository } = await api.get(
+        `repos/${this.state.repositoryInput}`
+      );
 
       repository.lastCommit = moment(repository.pushed_at).fromNow();
 
       this.setState({
-        repositoryInput: '',
-        repositories: [...this.state.repositories, repository]
-      })
+        repositoryInput: "",
+        repositories: [...this.state.repositories, repository],
+        repositoryError: false,
+        loading: false
+      });
     } catch (err) {
-      alert('Repositório não encontrado');
+      this.setState({ repositoryError: true });
+    } finally {
+      this.setState({ loading: false });
     }
   };
 
@@ -32,8 +42,12 @@ export default class Main extends Component {
     return (
       <Container>
         <img src={logo} alt="Github Compare" />
+        <i className="fa fa-twiteer" />
 
-        <Form onSubmit={this.handleAddRepository}>
+        <Form
+          withError={this.state.repositoryError}
+          onSubmit={this.handleAddRepository}
+        >
           <input
             type="text"
             placeholder="usuário/repositório"
@@ -41,7 +55,13 @@ export default class Main extends Component {
             onChange={e => this.setState({ repositoryInput: e.target.value })}
           />
           <button type="submit">
-            <strong>+</strong>
+            <strong>
+              {this.state.loading ? (
+                <i className="fa fa-circle-o-notch fa-spin" />
+              ) : (
+                "+"
+              )}
+            </strong>
           </button>
         </Form>
 

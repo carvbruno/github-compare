@@ -18,22 +18,25 @@ export const Form = styled.form`
     height: 55px;
     padding: 0 20px;
     background: #fff;
-    border: 0;
     font-size: 18px;
     color: #444;
     border-radius: 3px;
+
+    border: ${props => (props.withError ? "5px solid #F00" : 0)};
   }
 
   button {
+    width: 70px;
     height: 55px;
     padding: 0 20px;
     margin-left: 10px;
     background: #00a8ff;
-    color: #FFF;
+    color: #fff;
     border: 0;
     font-size: 30px;
     font-weight: bold;
     border-radius: 3px;
+    cursor: pointer;
 
     &:hover {
       background: #0097e6;
